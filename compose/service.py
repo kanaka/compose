@@ -928,6 +928,13 @@ class Service:
             slug
         )
 
+        # Add external labels as internal environment variables
+        lkey = lambda l: re.sub(r'[^_a-zA-Z0-9]', '_', l).replace('com_docker_compose', 'COM_DOCKER_COMPOSE')
+        container_options['environment'] = merge_environment(
+            container_options.get('environment', {}),
+            {lkey(k): v for k,v in container_options.get('labels', {}).items()}
+        )
+
         # Delete options which are only used in HostConfig
         for key in HOST_CONFIG_KEYS:
             container_options.pop(key, None)
